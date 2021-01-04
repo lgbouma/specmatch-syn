@@ -12,7 +12,4 @@ Installation Instructions
 Regarding the py2->py3 upgrade
 ===============
 
-Certain parts of the interpolation routines in `smsyn.match` use deprecated
-`scipy.interpolate` calls, which is part of what makes the py2->py3 update a
-bit harder than the
-
+Certain parts of the interpolation routines in `smsyn.match` use deprecated `scipy.interpolate` calls, include to `spleval` (see `https://docs.scipy.org/doc/scipy/reference/release.1.3.0.html?highlight=scipy%20interpolate%20spleval`).  This makes the py2->py3 update a bit harder than just changing the print statements.
