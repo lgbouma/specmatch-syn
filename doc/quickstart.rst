@@ -37,6 +37,7 @@ Tests
 At the end of `test_hires_pipeline.py`, you should get:
 
 .. code-block:: bash
+
       teff  logg   fe     vsini  psf     rchisq
 852   5750   5.0  0.0  4.912218    0   9.824765
 1627  5750   5.0  0.0  4.912218    0   9.824765
