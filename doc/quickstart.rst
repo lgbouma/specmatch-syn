@@ -60,3 +60,5 @@ Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (6100.0-6190.0 Ang)>
 5748 4.30 +0.00 4.92 0.00 20.06 3.50
 Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (6210.0-6260.0 Ang)>
 5750 4.35 +0.00 5.15 0.00 20.10 4.51
+
+
