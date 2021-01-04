@@ -1,7 +1,11 @@
 """Module that handels the fitting pipeline for hires
 """
-import os
-import cPickle as pickle
+import os, sys
+
+if sys.version_info[0] == 2:
+    import cPickle as pickle
+else:
+    import pickle
 
 import numpy as np
 import pandas as pd
