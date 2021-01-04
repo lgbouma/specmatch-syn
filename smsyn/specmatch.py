@@ -39,11 +39,11 @@ def grid_search(spec, libfile, wav_exclude, param_table, idx_coarse, idx_fine):
     )
     
     # First do a coarse grid search
-    print "performing coarse grid search"
+    print("performing coarse grid search")
     param_table_coarse = grid_search_loop(match, param_table.loc[idx_coarse])
 
     # For the fine grid search, 
-    print "performing fine grid search"
+    print("performing fine grid search")
     top = param_table_coarse.sort_values(by='rchisq').head(10)
     tab = param_table.loc[idx_fine]
     tab = tab.drop(idx_coarse)
@@ -57,7 +57,7 @@ def grid_search(spec, libfile, wav_exclude, param_table, idx_coarse, idx_fine):
     param_table = pd.concat([param_table_coarse, param_table_fine])
 
     cols = 'teff logg fe vsini  psf rchisq'.split()
-    print param_table[cols].sort_values(by='rchisq').head(10) 
+    print(param_table[cols].sort_values(by='rchisq').head(10))
 
     return param_table
 
@@ -118,16 +118,16 @@ def grid_search_loop(match, param_table0):
 
 def print_grid_search(*args):
     if len(args)==0:
-        print "        {:4s}  {:4s} {:3s}  {:4s}   {:8s} {:4s}".format(
+        print("        {:4s}  {:4s} {:3s}  {:4s}   {:8s} {:4s}".format(
             'teff','logg','fe','vsini','rchisq','nfev'
-        )
+        ))
     if len(args)==1:
         d = args[0]
         s = ""
         s += "{counter:3d}/{nrows:3d} {teff:4.0f} {logg:4.1f} {fe:+2.1f} "
         s += "{vsini:6.1f}  {rchisq:8.2f} {nfev:4.0f}"
         s = s.format(**d)
-        print s
+        print(s)
 
 def lincomb(spec, libfile, wav_exclude, param_table):
     """
@@ -191,7 +191,7 @@ def lincomb(spec, libfile, wav_exclude, param_table):
         "{rchisq0:.2f} {rchisq1:.2f}"
     )
     outstr = outstr.format(**d)
-    print outstr
+    print(outstr)
     rchisq = np.sum(match.masked_nresid(params)**2) / len(nresid)
 
     d = dict(
@@ -271,7 +271,7 @@ def polish(match, params0, psf, psf_err, angstrom_per_node=20):
 
     def print_params(lmout):
         lmout.params.pretty_print(columns=['value', 'vary'])
-        print "rchisq = {}".format(rchisq(lmout.params))
+        print("rchisq = {}".format(rchisq(lmout.params)))
 
     num_points = len(match.masked_nresid(params))
     params_out = {}
@@ -281,7 +281,7 @@ def polish(match, params0, psf, psf_err, angstrom_per_node=20):
     lmout = lmfit.minimize(
         objective, params, method='powell', options=dict(disp=True)
         )
-    print lmfit.fit_report(lmout)
+    print(lmfit.fit_report(lmout))
     print_params(lmout)
 
     # Re-fit, but allow a prior on the psf parameter
@@ -296,7 +296,7 @@ def polish(match, params0, psf, psf_err, angstrom_per_node=20):
     lmout = lmfit.minimize(
         objective, params, method='powell', options=dict(disp=True)
         )
-    print lmfit.fit_report(lmout)
+    print(lmfit.fit_report(lmout))
     print_params(lmout)
 
     for k in 'teff logg fe vsini psf'.split():

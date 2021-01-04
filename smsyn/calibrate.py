@@ -68,7 +68,7 @@ class Calibrator(object):
 
         temp = self.node_points.copy()
         temp['d'+self.param] = self.node_values
-        print temp
+        print(temp)
 
     def to_fits(self, fitsfn):
         """Save to fits file
@@ -113,7 +113,7 @@ class Calibrator(object):
 
         params_uncal['delta'] = values_i.reshape(-1)
         if params_uncal['delta'].isnull().sum() > 0:
-            print params_uncal[params_uncal['delta'].isnull()]
+            print(params_uncal[params_uncal['delta'].isnull()])
         params_cal = np.array(params_uncal[self.param]) + values_i.reshape(-1)
         return params_cal
 
@@ -156,12 +156,12 @@ class Calibrator(object):
         param_uncal = x[self.param].iloc[0] 
         c0 = param_cal - param_uncal
 
-        print ""*80
-        print " {} Hyperplane Parameters ".format(self.param)
+        print(""*80)
+        print(" {} Hyperplane Parameters ".format(self.param))
         s = "{:%s}" % fmt
         s = s.format(c0)
         i = 0 
-        print "c%i" % i, s
+        print("c%i" % i, s)
         for k in 'teff logg fe'.split():
             i+=1
             if list(x.columns).count(k)==1:
@@ -176,7 +176,7 @@ class Calibrator(object):
                     slope, k, x[k].iloc[0], 
                     dx[k].iloc[0] 
                 )
-                print "c%i" % i, s
+                print("c%i" % i, s)
 
 def read_fits(fitsfn, param):
     """Restore calibrator object from fits file

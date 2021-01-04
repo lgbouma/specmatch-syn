@@ -66,7 +66,7 @@ def main(fitsdir, outfile):
         header, model_table, wavelength, model_spectra
     )
     lib.to_hdf(outfile)
-    print "created {}".format(outfile)
+    print("created {}".format(outfile))
 
 if __name__=="__main__":
     psr = ArgumentParser(description="Create the coelho model library")

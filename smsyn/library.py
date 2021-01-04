@@ -92,7 +92,8 @@ class Library(object):
             chunk_col = int(chunk_col)
             chunks = (chunk_row, chunk_col)
 
-            print "storing model spectra with chunks of size {}".format(chunks)
+            print("storing model spectra with chunks of size {}".
+                  format(chunks))
             dset = h5.create_dataset(
                 'model_spectra', data=self.model_spectra, compression='gzip', 
                 compression_opts=1, shuffle=True, chunks=chunks
@@ -115,6 +116,7 @@ class Library(object):
         arr = np.array(self.model_table['teff logg fe'.split()])
         arr-=pars
         idx = np.where(np.sum(np.abs(arr) < 1e-3,axis=1)==3)[0]
+        import IPython; IPython.embed()
         assert len(idx)==1, "model at {} not found".format(pars)
         spec = self.model_spectra[idx]
         return spec
@@ -193,7 +195,7 @@ class Library(object):
             errmsg = "Interpolation mode {} not implemented.".format(
                 interp_mode
             )
-            raise NameError, errmsg
+            raise(NameError, errmsg)
         return flux
 
     def _broaden_rotmacro(self, flux, dvel, teff, vsini):
@@ -227,7 +229,7 @@ class Library(object):
         dvel = smsyn.wavsol.wav_to_dvel(wav)
         dvel0 = dvel[0]
         if np.allclose(dvel, dvel[0], rtol=1e-3, atol=1) is False:
-            print "wav not uniform in loglambda, using mean dvel"
+            print("wav not uniform in loglambda, using mean dvel")
             dvel0 = np.mean(dvel)
 
         if rot_method=='rotmacro':

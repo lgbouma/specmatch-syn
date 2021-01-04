@@ -69,7 +69,7 @@ class PixelVelocityShift(object):
         if method=='spline':
             dvel = self._calculate_dvel_spline(**kwargs)
             
-        print "Solving for pixel-by-pixel velocity shift"
+        print("Solving for pixel-by-pixel velocity shift")
         print_vshift(self.pixmid, dvel[:,self.pixmid] )
         return dvel
         
@@ -92,7 +92,7 @@ class PixelVelocityShift(object):
         vshift = vshift.compressed()
 
         if np.std(vshift) > 25:
-            print "WARNING: velocity shifts not well determined"
+            print("WARNING: velocity shifts not well determined")
             vshift *= 0
 
         pix = np.arange(self.npix)
@@ -115,7 +115,7 @@ class PixelVelocityShift(object):
         vshift = ma.masked_array(vshift, bout)
 
         if np.std(vshift) > 25:
-            print "WARNING: velocity shifts not well determined"
+            print("WARNING: velocity shifts not well determined")
             vshift *= 0
 
         pix = np.arange(self.npix)
@@ -147,7 +147,7 @@ class PixelVelocityShift(object):
         vshift = ma.masked_array(vshift, bout)
 
         if np.std(vshift) > 25:
-            print "WARNING: velocity shifts not well determined"
+            print("WARNING: velocity shifts not well determined")
             vshift *= 0
 
         pix = np.arange(self.npix)
@@ -212,7 +212,7 @@ def vshift(ech, ref_wav, ref_flux, nseg=8):
     pixsegs = np.array_split(np.arange(ech.npix), nseg)
     pixmid = np.array([int(np.mean(x)) for x in pixsegs])
 
-    print "Calculating velocity shifts order by order"
+    print("Calculating velocity shifts order by order")
     for i_order in range(ech.nord):
         for i_seg in range(nseg):
             i_pix = pixsegs[i_seg]
@@ -228,12 +228,12 @@ def print_vshift(pixmid, vshift):
     nord = vshift.shape[0]
     outstr = ["{:7d}".format(v) for v in pixmid]
     outstr = " ".join(outstr)
-    print "pixmid   " + outstr
+    print("pixmid   " + outstr)
     for i_order in range(nord):
         outstr = ["{:+7.2f}".format(v) for v in vshift[i_order]]
         outstr = " ".join(outstr)
         outstr = "order {:2d} ".format(i_order) + outstr
-        print outstr
+        print(outstr)
 
 def shift_orders(ech, ref_wav, dvel):
     """Shift echelle orders
