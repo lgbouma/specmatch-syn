@@ -32,7 +32,7 @@ if __name__=="__main__":
     uflux = hduL[1].data # uncertanties
 
     ref_wav = np.logspace(np.log10(wav[0,0]),np.log10(wav[-1,-1]),64000)
-    ref_flux = lib.synth(ref_wav, 5700, 4.4, 0.0, 2, 2)
+    ref_flux = lib.synth(ref_wav, 5700, 4.4, 0.0, 2, 2, 'rotmacro')
     flux_shift, uflux_shift = smsyn.inst.hires.shift.shift(
         wav, flux, uflux, ref_wav, ref_flux
     )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 import os
 from argparse import ArgumentParser
-from smsyn.inst.hires.pipeline import Pipeline
+from smsyn.inst.hires.pipeline import Pipeline, grid_search, lincomb
 from smsyn import DATA_DIR
 
 if __name__=="__main__":
@@ -10,5 +10,5 @@ if __name__=="__main__":
     args = psr.parse_args()
     outfile = os.path.join(DATA_DIR,'GANYMEDE_rj76.279.sm.fits')
     pipe = Pipeline(outfile, args.libfile)
-    pipe.grid_search(debug=False)
-    pipe.lincomb()
+    grid_search(pipe, debug=False)
+    lincomb(pipe)
