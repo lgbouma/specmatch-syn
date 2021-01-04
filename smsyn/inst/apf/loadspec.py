@@ -44,12 +44,12 @@ def read_fits(specfile, flatten=True, Bflat=False, nflat=False,geterr=False,orde
 
     if flatten and not Bflat and not nflat:
         if verbose:
-            print "Polynomial continuum normalization. order = %d" % order
+            print("Polynomial continuum normalization. order = %d" % order)
         for i in range(spec.shape[0]):
             spec[i] = flatspec(spec[i],order=order)
     elif Bflat:
         if verbose:
-            print "B star continuum normalization"
+            print("B star continuum normalization")
 
         spec = spec[:,:-1]
         errspec = errspec[:,:-1]
@@ -60,7 +60,7 @@ def read_fits(specfile, flatten=True, Bflat=False, nflat=False,geterr=False,orde
         for i in range(spec.shape[0]):
             spec[i] = Bflatten(spec[i], bspec[i])
     elif nflat:
-        if verbose: print "Narrow flat continuum normalization"
+        if verbose: print("Narrow flat continuum normalization")
         fitsfile = os.path.join(os.path.dirname(os.path.abspath(smsyn.__file__)),'inst/apf/Nflat.fits')
         bspec = read_fits(fitsfile, flatten=False, Bflat=False, specorders=specorders)
         

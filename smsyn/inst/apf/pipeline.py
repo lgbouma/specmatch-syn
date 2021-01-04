@@ -66,7 +66,7 @@ def polish(pipe):
         spec = smsyn.io.spectrum.read_fits(pipe.smfile) # Save to output
         spec = spec[(segment[0]<spec['wav']) & (spec['wav']<segment[1])]
 
-        print "Polishing fit to {}".format(spec.__repr__())
+        print("Polishing fit to {}".format(spec.__repr__()))
 
         wavmask = smsyn.specmatch.wav_exclude_to_wavmask(
             spec.wav, pipe.wav_exclude

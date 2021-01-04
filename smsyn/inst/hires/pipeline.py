@@ -99,7 +99,7 @@ def grid_search(pipe, debug=False):
 
     for segment in segments:
         spec = pipe._get_spec_segment(segment)
-        print "Grid search: {}".format(spec.__repr__())
+        print("Grid search: {}".format(spec.__repr__()))
 
         param_table_out = smsyn.specmatch.grid_search(
             spec, pipe.libfile, pipe.wav_exclude, param_table, 
@@ -118,13 +118,13 @@ def lincomb(pipe):
 
     """
     ntop = 6
-    print "teff logg fe vsini psf rchisq0 rchisq1"
+    print("teff logg fe vsini psf rchisq0 rchisq1")
     pipe.lincomb_output = {}
     for segment in pipe.segments:
         extname = 'grid_search_%i' % segment[0]
         param_table = smsyn.io.fits.read_dataframe(pipe.smfile, extname)
         spec = pipe._get_spec_segment(segment)
-        print "Linear Combinations: {}".format(spec.__repr__())
+        print("Linear Combinations: {}".format(spec.__repr__()))
 
         param_table_top = param_table.sort_values(by='rchisq').iloc[:ntop]
         output = smsyn.specmatch.lincomb(
@@ -151,7 +151,7 @@ def polish(pipe):
         spec = smsyn.io.spectrum.read_fits(pipe.smfile) # Save to output
         spec = spec[(segment[0]<spec['wav']) & (spec['wav']<segment[1])]
 
-        print "Polishing fit to {}".format(spec.__repr__())
+        print("Polishing fit to {}".format(spec.__repr__()))
 
         wavmask = smsyn.specmatch.wav_exclude_to_wavmask(
             spec.wav, pipe.wav_exclude
