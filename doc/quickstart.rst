@@ -32,7 +32,31 @@ Run SpecMatch Algorithm
     pipe.grid_search(debug=False)
     pipe.lincomb()
 
+Tests
+====================
+At the end of `test_hires_pipeline.py`, you should get:
 
-
-
-
+```
+      teff  logg   fe     vsini  psf     rchisq
+852   5750   5.0  0.0  4.912218    0   9.824765
+1627  5750   5.0  0.0  4.912218    0   9.824765
+1182  5750   3.5  0.0  5.271638    0  11.309809
+1756  5750   3.5  0.0  5.271638    0  11.309809
+1628  5750   4.5  0.0  5.266066    0  11.735292
+853   5750   4.5  0.0  5.266066    0  11.735292
+777   5750   4.5  0.0  5.266066    0  11.735292
+190   5750   4.0  0.0  5.409780    0  11.827457
+2685  5750   4.0  0.0  5.409780    0  11.827457
+573   5750   4.0  0.0  5.409780    0  11.827457
+teff logg fe vsini psf rchisq0 rchisq1
+Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (5200.0-5280.0 Ang)>
+5818 4.57 +0.00 3.94 0.00 79.80 25.51
+Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (5360.0-5440.0 Ang)>
+5753 4.33 +0.00 4.44 0.00 42.52 13.01
+Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (5530.0-5610.0 Ang)>
+5750 4.39 +0.00 4.76 0.00 28.16 7.95
+Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (6100.0-6190.0 Ang)>
+5748 4.30 +0.00 4.92 0.00 20.06 3.50
+Linear Combinations: <Spectrum: GANYMEDE, rj76.279, (6210.0-6260.0 Ang)>
+5750 4.35 +0.00 5.15 0.00 20.10 4.51
+```
