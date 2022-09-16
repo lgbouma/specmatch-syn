@@ -12,7 +12,7 @@ class Calibrator(object):
     """
     Calibration object
 
-    Args: 
+    Args:
         param (str): spectroscopic parameter for calibration
     """
     def __init__(self, param):
@@ -28,11 +28,11 @@ class Calibrator(object):
 
         Args:
             catalog (pandas.DataFrame): Table with the (uncalibrated) specmatch
-                parameters and the true stellar parameters determine through 
+                parameters and the true stellar parameters determine through
                 some other method.
             node_points (pandas.DataFrame): Table of points at which to fit for
                 calibration parameters.
-            suffixes (list): Suffixes for fo the `new` and `library parameters 
+            suffixes (list): Suffixes for fo the `new` and `library parameters
         """
         self.param_uncal = self.param+suffixes[0]
         self.param_cal = self.param+suffixes[1]
@@ -51,14 +51,14 @@ class Calibrator(object):
         def resid(fit_params):
             for i in range(len(self.node_points)):
                 self.node_values.ix[i,self.param] = fit_params['p%i' % i].value
-            
+
             namemap = {}
             for k in 'teff logg fe'.split():
                 namemap[k+suffixes[0]] = k
 
             params_uncal = self.catalog.rename(columns=namemap)
             _resid = (
-                np.array(self.catalog[self.param_cal]).flatten() - 
+                np.array(self.catalog[self.param_cal]).flatten() -
                 self.transform(params_uncal).flatten()
             )
 
@@ -87,7 +87,7 @@ class Calibrator(object):
         """Transform uncalibrated to calibrated parameters
 
         Args:
-            params_uncal (dict): uncalibrated parameters with keys: 
+            params_uncal (dict): uncalibrated parameters with keys:
                 teff, logg, fe
 
         Return:
@@ -109,7 +109,7 @@ class Calibrator(object):
         else:
             interp = LinearNDInterpolator(points, values)
             values_i = interp(points_i)
-            
+
 
         params_uncal['delta'] = values_i.reshape(-1)
         if params_uncal['delta'].isnull().sum() > 0:
@@ -133,7 +133,7 @@ class Calibrator(object):
 
         Returns:
              str: formatted string
-             
+
 
         Example:
              >>> x = dict(teff=5500, logg=3.5, fe=0.0)
@@ -142,7 +142,7 @@ class Calibrator(object):
              $\Delta logg$ =
 
         """
-        
+
         # Dimensions
         npoints, ndim = self.node_points.shape
         assert npoints==ndim+1, "Must have ndim + 1 points"
@@ -153,14 +153,14 @@ class Calibrator(object):
 
         # Value of plane at reference point
         param_cal = self.transform(x)[0]
-        param_uncal = x[self.param].iloc[0] 
+        param_uncal = x[self.param].iloc[0]
         c0 = param_cal - param_uncal
 
         print(""*80)
         print(" {} Hyperplane Parameters ".format(self.param))
         s = "{:%s}" % fmt
         s = s.format(c0)
-        i = 0 
+        i = 0
         print("c%i" % i, s)
         for k in 'teff logg fe'.split():
             i+=1
@@ -168,13 +168,13 @@ class Calibrator(object):
                 _x = x.copy()
                 _x[k] += dx[k]
                 param_cal = self.transform(_x)[0]
-                param_uncal = _x[self.param].iloc[0] 
-                
+                param_uncal = _x[self.param].iloc[0]
+
                 slope = param_cal - param_uncal - c0
-                s = "{:%s} * ({:s} - {:%s})/({:%s})" % (fmt, fmt, fmt) 
+                s = "{:%s} * ({:s} - {:%s})/({:%s})" % (fmt, fmt, fmt)
                 s = s.format(
-                    slope, k, x[k].iloc[0], 
-                    dx[k].iloc[0] 
+                    slope, k, x[k].iloc[0],
+                    dx[k].iloc[0]
                 )
                 print("c%i" % i, s)
 
@@ -204,7 +204,7 @@ def calibrate(df, calfn, mode='uncal'):
         mode: `uncal` - put the uncalibrated parameters into _uncal suffix
         mode: `fivepane` - put the calibrated parameters to _sm
     """
-    
+
     def namemap(suffix0,suffix1):
         _namemap = {}
         for k in 'teff logg fe'.split():
@@ -214,7 +214,7 @@ def calibrate(df, calfn, mode='uncal'):
     if mode=='fivepane':
         # Replace _sm suffix with nothing
         df = df.rename(columns=namemap('_sm',''))
-        
+
         # perform the calibrations
         for k in 'teff logg fe'.split():
             cal = read_fits(calfn,k)

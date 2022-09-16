@@ -32,7 +32,7 @@ def ccs(obslambda,obsraw,tlambda,traw,r=[-200,200]):
     plot(o)
     plot(t)
     #import pdb;pdb.set_trace()
-    
+
     npix = o.size
     lag  = np.arange(-npix+1,npix)
 
@@ -42,7 +42,7 @@ def ccs(obslambda,obsraw,tlambda,traw,r=[-200,200]):
     velm = vel*delvel
     velm *=-1 # Hack to make it agree with IDL version.
     return velm
-    
+
 def findpeak(x,y,r=3,ymax=False):
     """
     Fit a parabola near a maximum, and figure out where the derivative is 0.

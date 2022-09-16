@@ -40,19 +40,19 @@ def panels(smres,nbest=10,how='chi',libpar=None):
     """
 
     s = """\
-xk     yk    
+xk     yk
 teff   logchi
 logg   logchi
 fe     logchi
 vsini  logchi
-teff   logg  
-logg   fe    
-teff   fe    
-teff   vsini 
-teff   logg  
-logg   fe    
-teff   fe    
-teff   vsini 
+teff   logg
+logg   fe
+teff   fe
+teff   vsini
+teff   logg
+logg   fe
+teff   fe
+teff   vsini
 """
 
     fig, axL = plt.subplots(nrows=3,ncols=4,figsize=(14,10) )
@@ -102,7 +102,7 @@ teff   vsini
     targname = d['name']
 
     smpar['targname'] = targname
-    
+
     # Plot verticle lines at the location where SM thinks the parameters are
     def plotline(x):
         ax = x['ax']
@@ -111,7 +111,7 @@ teff   vsini
         trans = blended_transform_factory(ax.transData,ax.transAxes)
         plt.axvline(smpar[xk],ls='--')
         plt.text(smpar[xk],0.9,'SM',transform=trans)
-        
+
         if libpar is not None:
             plt.axvline(libpar[xk])
             plt.text(libpar[xk],0.9,'LIB',transform=trans)
@@ -151,7 +151,7 @@ teff   vsini
             txt = plt.text(x,y,i,color='m',weight='bold',size=16,alpha=0.7)
 
     dfplot.iloc[8:].apply(ann,axis=1)
-    
+
     for i in dfplot.index:
         if dfplot.ix[i,'xL']=='teff':
             plt.sca(axL[i])
@@ -177,7 +177,7 @@ teff   vsini
         plt.sca(d['ax'])
         zoom(d['xk'],d['yk'])
     dfplot.iloc[8:].apply(dfzoom,axis=1)
-    
+
     plt.sca(axL[8])
 
     flipd = {'teff' : True,
@@ -197,18 +197,18 @@ teff   vsini
                 flip('y')
     dfplot.apply(flipax,axis=1)
     flip('both')
-    
+
     axL = plt.gcf().get_axes()
     for ax in axL:
         plt.sca(ax)
         if ax.get_xlabel()=='Teff':
             plt.setp(ax.xaxis.get_ticklabels(),rotation=20)
-            
+
     stitle = "%(targname)-10s %(targobs)s\n" % smpar
     if libpar is not None:
         stitle +="LIB: %(teff)i %(logg).2f %(fe)+.2f\n" % libpar
     stitle +=" SM: %(teff)i %(logg).2f %(fe)+.2f " % smpar
-             
+
     plt.sca(axL[0])
     plt.gcf().set_tight_layout(True)
     plt.title(stitle,fontdict=dict(family='monospace'))
@@ -217,7 +217,7 @@ teff   vsini
 def plot_frame(dfplot,df,**kwargs):
     """
     Plot DataFrame
-    
+
     Helper function for panels.
     """
     for i in dfplot.index:
@@ -233,7 +233,7 @@ def flip(axis):
     if axis=='y':
         plt.ylim(plt.ylim()[::-1])
     if axis=='both':
-        plt.xlim(plt.xlim()[::-1])        
+        plt.xlim(plt.xlim()[::-1])
         plt.ylim(plt.ylim()[::-1])
 
 
@@ -251,7 +251,7 @@ def close(par,lib):
     How close are two spectra?
 
     Calculate distance between a given (Teff,logg,fe) triple to library values?
-    
+
     Parameters
     ----------
     par : dictionary with the parameters of interest. Must contain the
@@ -264,18 +264,18 @@ def close(par,lib):
           following columns
           - teff
           - logg
-          - fe      
+          - fe
 
     Returns
     -------
     dist : array with the distances to all the library points
 
     """
-    
+
     par['eteff'] = 100
     par['elogg'] = 0.1
     par['efe'] = 0.1
-    
+
     dist = np.zeros(len(lib))
     for k in 'teff logg fe'.split():
         dist+=((lib[k] - par[k])/par['e'+k])**2
@@ -287,13 +287,13 @@ def plot_matches_group(g,how='chi',ntop=8):
     Plot matches from h5 group
 
     Pulls out the relavent arrays from a group and runs plot_matches
-    
+
     Parameters
     ----------
     g : h5 group containing the following datasets
         - arr : DataSet with spectra
         - smres : DataSet with specmatch results
-    
+
     """
     smres = pd.DataFrame(g['smres'][:])
     smres = results.smres_add_chi(smres)
@@ -318,13 +318,13 @@ def plot_matches(smresbest,lspec):
     Plot best matches
 
     Plots the target spectrum along with the top matches
-       
+
     """
     shift = 1
     fig,axL = plt.subplots(nrows=2,figsize=(20,12),sharex=True)
-    
+
     plt.sca(axL[0])
-    
+
     targpar = smresbest.rename(columns={'targobs':'obs'})
     targpar = dict(targpar['obs ord wlo whi'.split()].iloc[0])
     targpar['type'] = 'cps'
@@ -332,7 +332,7 @@ def plot_matches(smresbest,lspec):
     w = targspec['w']
     plt.plot(w,targspec['s'],'k')
 
-    plt.rc('axes',color_cycle=['Tomato', 'RoyalBlue'])    
+    plt.rc('axes',color_cycle=['Tomato', 'RoyalBlue'])
     for i in smresbest.index:
         # Plot target spectrum
         plt.sca(axL[0])
@@ -342,7 +342,7 @@ def plot_matches(smresbest,lspec):
         par = dict(smresbest.ix[i])
         par['y'] = y+1
         annotate_matches(par)
-        
+
         # Plot residuals
         plt.sca(axL[1])
         y = shift*0.2
@@ -361,7 +361,7 @@ def plot_quicklook(h5file):
     Generate a 1-page quick look plot that captures the important
     spectral information
     """
-    
+
     #    fig = figure()
     nrowtop = 2
     ncols = 5
@@ -405,8 +405,8 @@ def plot_quicklook(h5file):
         plt.ylim(-0.2,1.2)
 
     s = """\
-xk     yk    
-teff   logg  
+xk     yk
+teff   logg
 fe     logg
 """
 
@@ -471,7 +471,7 @@ chi    =  %(chi).6f
 def plotspecmodel(w,tspec,mspec,res,mask):
     """
     Plot these three quantities
-    
+
     tspec : target spectrum
     mspec : model spectrum
     res : residuals
@@ -480,7 +480,7 @@ def plotspecmodel(w,tspec,mspec,res,mask):
     plt.plot(w,tspec)
     plt.plot(w,mspec)
     plt.plot(w,res)
-    
+
     sL = ma.flatnotmasked_contiguous(ma.masked_array(mask,~mask))
     if sL is not None:
         for s in sL:
@@ -492,11 +492,11 @@ def plotspecmodel(w,tspec,mspec,res,mask):
 def axvspan_mask(x,mask):
     """
     Plot these three quantities
-   
+
     x : independent variable
     mask : what ranges are masked out
     """
-    
+
     sL = ma.flatnotmasked_contiguous(ma.masked_array(mask,~mask))
     if sL is not None:
         for s in sL:
@@ -509,20 +509,20 @@ def axvspan_mask(x,mask):
 def stackax(axL):
     """
     Stack Axes
-    
+
     Call a plotting function multiple times for every axis. Then
     adjust the xlims, so we see only a segment.
     """
     def wrap(f):
         nax = len(axL)
         def wrapped_f(*args):
-            for ax in axL:                
+            for ax in axL:
                 plt.sca(ax)
                 f(*args)
             xl = plt.xlim()
             start = xl[0]
             step = (xl[1]-xl[0]) / float(nax)
-            for ax in axL:                
+            for ax in axL:
                 plt.sca(ax)
                 plt.xlim(start,start+step)
                 start+=step
@@ -532,11 +532,11 @@ def stackax(axL):
 def axvspan_mask(x,mask):
     """
     Plot these three quantities
-   
+
     x : independent variable
     mask : what ranges are masked out
     """
-    
+
     sL = ma.flatnotmasked_contiguous(ma.masked_array(mask,~mask))
     if sL is not None:
         for s in sL:
@@ -565,7 +565,7 @@ def plot_polish(h5file,group,libpar=None):
     axLccf = [fig.add_subplot(gs[i,4]) for i in range(1,4)]
     axLacf = [fig.add_subplot(gs[i,5]) for i in range(1,4)]
 
-    axccfsum = fig.add_subplot(gs[0,4]) 
+    axccfsum = fig.add_subplot(gs[0,4])
     axacfsum = fig.add_subplot(gs[0,5])
 
     segdf = conf.segdf
@@ -602,7 +602,7 @@ def plot_polish(h5file,group,libpar=None):
     plt.sca(axLspec[0])
 
     plt.title(stitle,family='monospace',size='medium',ha='left')
-    
+
     bins = np.linspace(w[0],w[-1],4)
     binslo = bins[:-1]
     binshi = bins[1:]
@@ -630,7 +630,7 @@ def plot_polish(h5file,group,libpar=None):
     fig.set_tight_layout(False)
     fig.subplots_adjust(top=0.95)
 
-    plt.draw()    
+    plt.draw()
 
 def plot_polish_seg(h5file,group,libpar=None):
     """
@@ -655,7 +655,7 @@ def plot_polish_seg(h5file,group,libpar=None):
     axLccf = [fig.add_subplot(gs[i,4]) for i in range(1,4)]
     axLacf = [fig.add_subplot(gs[i,5]) for i in range(1,4)]
 
-    axccfsum = fig.add_subplot(gs[0,4]) 
+    axccfsum = fig.add_subplot(gs[0,4])
     axacfsum = fig.add_subplot(gs[0,5])
 
     segdf = conf.segdf
@@ -691,9 +691,9 @@ def plot_polish_seg(h5file,group,libpar=None):
 #        stitle+= '%(teff)i %(logg).2f %(fe).2f %(vsini).2f (Library)\n' % libpar
 #
     plt.sca(axLspec[0])
-    
+
     plt.title(stitle,family='monospace',size='medium',ha='left')
-    
+
     bins = np.linspace(w[0],w[-1],4)
     binslo = bins[:-1]
     binshi = bins[1:]
@@ -721,16 +721,16 @@ def plot_polish_seg(h5file,group,libpar=None):
     fig.set_tight_layout(False)
     fig.subplots_adjust(top=0.95)
 
-    plt.draw()    
+    plt.draw()
 
 def plot_ccf(w,tspec,mspec):
     lag,tmccf = ccf(tspec,mspec)
 
-    dv = restwav.loglambda_wls_to_dv(w) 
+    dv = restwav.loglambda_wls_to_dv(w)
     dv = lag*dv
 
     dvmax = ccs.findpeak(dv,tmccf)
-    plt.plot(dv,tmccf,'k',label='tspec')    
+    plt.plot(dv,tmccf,'k',label='tspec')
     plt.axvline(dvmax,color='RoyalBlue',lw=2,alpha=0.4,zorder=0)
 
     AddAnchored("dv (max) = %.2f km/s" % dvmax,**annkw)
@@ -742,7 +742,7 @@ def plot_ccf(w,tspec,mspec):
 def ccf(x,y):
     mx = np.mean(x)
     my = np.mean(y)
-    ccf = np.correlate(x - mx, y - my, mode='full') 
+    ccf = np.correlate(x - mx, y - my, mode='full')
     npix = x.size
     lag = np.arange(-npix+1,npix)
     return lag,ccf
@@ -769,16 +769,16 @@ def AddAnchored(*args,**kwargs):
 def plot_acf(w,tspec,mspec):
     lag,tacf = ccf(tspec,tspec)
     lag,macf = ccf(mspec,mspec)
-    dv = restwav.loglambda_wls_to_dv(w) 
+    dv = restwav.loglambda_wls_to_dv(w)
     dv = lag*dv
     plt.plot(dv,tacf,'k',label='tspec')
     plt.plot(dv,macf,'Tomato',label='mspec')
-    
+
     # Label shifts that can include noise
-    b = abs(lag)<=2 
+    b = abs(lag)<=2
     plt.plot(dv[b],tacf[b],'.',mec='none',mfc='k')
     plt.plot(dv[b],macf[b],'.',mec='none',mfc='Tomato')
-    
+
     thwhm = hwhm(lag,tacf)
     mhwhm = hwhm(lag,macf)
     s = """\
@@ -836,7 +836,7 @@ def peakIntrp(dv,fconv):
     xfit = dv[bfit]
     yfit = fconv[bfit]
     p1 = np.polyfit(xfit,yfit,2)
-    bint = adv < 2 
+    bint = adv < 2
     dvint = dv[bint]
     fconvint = np.polyval(p1,dvint)
     return dvint,fconvint

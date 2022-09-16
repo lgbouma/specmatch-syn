@@ -27,7 +27,7 @@ class SpecMatchResults(object):
             polishing_result (list of dicts): output from `smsyn.specmatch.polish`
 
         """
-        
+
         self.grid_result = grid_result
         self.polishing_result = polishing_result
 
@@ -49,7 +49,7 @@ class SpecMatchResults(object):
         for k in self.bestfit.keys():
             if not np.isfinite(self.bestfit[k]):
                 self.bestfit[k] = -999
-                
+
     def to_fits(self, outfile, clobber=True):
         """Save to FITS
 
@@ -58,7 +58,7 @@ class SpecMatchResults(object):
         Args:
             outfile (string): name of output file name
             clobber (bool): if true, will overwrite existing file
-            
+
         """
 
         # Save the grid search results
@@ -92,11 +92,11 @@ class SpecMatchResults(object):
 
 
             polish_hdus.append(fits.BinTableHDU.from_columns(columns, header=header))
-                
-            
-            
 
-        
+
+
+
+
         fitsheader = fits.Header()
 
         # Add descriptions of extensions into primary header
@@ -107,7 +107,7 @@ class SpecMatchResults(object):
 
         fitsheader.update(ext_defs)
         fitsheader.update(self.bestfit)
-        
+
         primary_hdu = fits.PrimaryHDU(header=fitsheader)
         hdu_list = fits.HDUList([primary_hdu, grid_hdu]+polish_hdus)
 
@@ -121,10 +121,10 @@ def read_fits(filename):
 
     Args:
         filename (string): path to fits file
-        
+
     Returns:
         SpecMatchResults object
-        
+
     """
 
     class _Store_Params(object):
@@ -136,12 +136,12 @@ def read_fits(filename):
                 min_limit = header[hkey+'_MIN']
                 max_limit = header[hkey+'_MAX']
                 var = header[hkey+'_VARY']
-                
+
                 if min_limit == -999:
                     min_limit = -np.inf
                 if max_limit == -999:
                     max_limit = np.inf
-                
+
                 params.add(k, value=val,
                            min=min_limit,
                            max=max_limit,
@@ -149,13 +149,13 @@ def read_fits(filename):
                            )
 
             self.params = params
-            
-                
+
+
     hdulist = fits.open(filename)
     header = hdulist[0].header
 
     grid_results = pd.DataFrame(hdulist[1].data)
-    
+
     output = []
     for hdu in hdulist[2:]:
 
@@ -165,10 +165,10 @@ def read_fits(filename):
         fake_result_obj = _Store_Params(header)
 
         d = dict(
-            model=df['model'].values, 
-            continuum=df['continuum'].values, 
+            model=df['model'].values,
+            continuum=df['continuum'].values,
             wav=df['wav'].values,
-            resid=df['resid'].values, 
+            resid=df['resid'].values,
             objective=head['OBJFUNC'],
             result=fake_result_obj
             )
@@ -177,8 +177,8 @@ def read_fits(filename):
 
 
     smresults = SpecMatchResults(grid_results, output)
-                
+
     return smresults
-    
+
 
 

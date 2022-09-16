@@ -17,7 +17,7 @@ import smsyn.kernels
 import smsyn.wavsol
 
 # assert the two floats are equal if they are closer than this amount
-FLOAT_TOL = 1e-3 
+FLOAT_TOL = 1e-3
 
 class Library(object):
     """The Library object
@@ -52,7 +52,7 @@ class Library(object):
     header_required_keys = ['model_name', 'model_reference']
     target_chunk_bytes = 100e3 # Target number of bytes are per hdf chunk
 
-    def __init__(self, header, model_table, wav, model_spectra, 
+    def __init__(self, header, model_table, wav, model_spectra,
                  wavlim=None):
         for key in self.header_required_keys:
             assert key in header.keys(), "{} required in header".format(key)
@@ -68,7 +68,7 @@ class Library(object):
             self.header['model_name'], self.header['model_reference']
         )
         return _outstr
-        
+
     def to_hdf(self, outfile):
         """Save model library
 
@@ -95,7 +95,7 @@ class Library(object):
             print("storing model spectra with chunks of size {}".
                   format(chunks))
             dset = h5.create_dataset(
-                'model_spectra', data=self.model_spectra, compression='gzip', 
+                'model_spectra', data=self.model_spectra, compression='gzip',
                 compression_opts=1, shuffle=True, chunks=chunks
             )
 
@@ -108,10 +108,10 @@ class Library(object):
         Args:
             pars (3-element iterable): A 3-element tuple containing teff, logg,
                 and fe
-            
+
         Returns:
             array: model spectrum flux resampled at the new wavelengths
-        
+
         """
         arr = np.array(self.model_table['teff logg fe'.split()])
         arr-=pars
@@ -185,7 +185,7 @@ class Library(object):
         if len(idx)>=1:
             flux = self.model_spectra[idx][0]
             return flux
-        
+
         if interp_mode == 'trilinear':
             flux = self._trilinear_interp(teff, logg, fe)
         elif interp_mode == 'simplex':
@@ -201,26 +201,26 @@ class Library(object):
     def _broaden_rotmacro(self, flux, dvel, teff, vsini):
         n = 151 # Correct for VsinI up to ~50 km/s
         xi = 3.98 + (teff - 5770.0) / 650.0
-        if xi < 0: 
-            xi = 0 
-    
+        if xi < 0:
+            xi = 0
+
         varr, M = smsyn.kernels.rotmacro(n, dvel, xi, vsini)
-        flux = nd.convolve1d(flux, M) 
+        flux = nd.convolve1d(flux, M)
         return flux
 
     def _broaden_rot(self, flux, dvel, vsini):
         n = 151 # Correct for VsinI up to ~50 km/s
         varr, M = smsyn.kernels.rot(n, dvel, vsini)
-        flux = nd.convolve1d(flux, M) 
+        flux = nd.convolve1d(flux, M)
         return flux
 
-    def _broaden(self, wav, flux, psf=None, rot_method='rotmacro', teff=None, 
+    def _broaden(self, wav, flux, psf=None, rot_method='rotmacro', teff=None,
                  vsini=None):
         """
         Args:
             wav (array): wavelength
             flux (array): fluxes
-            psf (float): width of gaussian psf 
+            psf (float): width of gaussian psf
             rot_method (str): Treatment of rotation. If 'rotmacro', then teff and
                vsini must be set. If 'none', then no rotation rotational
                broadening is used.
@@ -234,18 +234,18 @@ class Library(object):
 
         if rot_method=='rotmacro':
             flux = self._broaden_rotmacro(flux, dvel0, teff, vsini)
-        elif rot_method=='rot':        
+        elif rot_method=='rot':
             flux = self._broaden_rot(flux, dvel0, vsini)
-        else:        
-            assert False,'invalid rot_method' 
+        else:
+            assert False,'invalid rot_method'
 
         if psf is not None:
-            # Broaden with PSF (assume gaussian) 
-            if psf > 0: 
+            # Broaden with PSF (assume gaussian)
+            if psf > 0:
                 flux = nd.gaussian_filter(flux,psf)
 
         return flux
-            
+
     def synth(self, wav, teff, logg, fe, vsini, psf, rot_method,
               interp_kw=None):
         """Synthesize a model spectrum
@@ -273,7 +273,7 @@ class Library(object):
         """
         if interp_kw is None:
             interp_kw = dict(mode='trilinear')
-            
+
         flux = self.interp_model(teff, logg, fe, **interp_kw)
         flux = np.interp(wav, self.wav, flux) # Resample at input wavelengths
         flux = self._broaden(
@@ -297,7 +297,7 @@ class Library(object):
         flux = np.dot(coeff,model_spectra)
         flux = np.interp(wav, self.wav, flux) # Resample at input wavelengths
         return flux
-    
+
 def read_hdf(filename, wavlim=None):
     """Read model library grid
 
@@ -308,17 +308,17 @@ def read_hdf(filename, wavlim=None):
             of stellar atmosphere models
         wavlim (2-element iterable): upper and lower wavelength limits
             (in Angstroms) to load into RAM
-        
+
     Returns:
         Library object
-        
+
     """
-    
+
     with h5py.File(filename,'r') as h5:
         header = dict(h5.attrs)
         model_table = pd.DataFrame.from_records(h5['model_table'][:])
         wav = h5['wav'][:]
-        
+
         if wavlim is None:
             model_spectra = h5['model_spectra'][:]
         else:
@@ -339,7 +339,7 @@ def trilinear_interp(c,v0,v1,vi):
     http://en.wikipedia.org/wiki/Trilinear_interpolation
 
     Args:
-        c (8 x n array): where C each row of C corresponds to the value at one 
+        c (8 x n array): where C each row of C corresponds to the value at one
             corner
         v0 (length 3 array): with the origin
         v1 (length 3 array): with coordinates on the diagonal
@@ -347,11 +347,11 @@ def trilinear_interp(c,v0,v1,vi):
 
     Returns:
         interpolated value of c at vi
-        
+
     """
-    v0 = np.array(v0) 
-    v1 = np.array(v1) 
-    vi = np.array(vi) 
+    v0 = np.array(v0)
+    v1 = np.array(v1)
+    vi = np.array(vi)
 
     vd = (vi-v0)/(v1-v0) # fractional distance between grid points
 

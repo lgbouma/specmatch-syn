@@ -31,14 +31,14 @@ def GPdt(xi,x,y,corrlen=20):
 def cfit(spec):
     """
     Continuum fit.
-    
+
     Divide the spectrum up into n segments. Determine the 95
     percentile for each segment. Fit a GP through these points.
 
     Parameters
     ----------
     """
-    
+
     wcen,sp = bin_percentile(spec,10)
     meansp = np.mean(sp) # Use as the mean value of the GP
     c = GPdt(spec['w'],wcen,sp-meansp,corrlen=20)+meansp

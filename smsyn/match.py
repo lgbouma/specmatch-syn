@@ -12,7 +12,7 @@ class Match(object):
         """
 
         The Match object used for fitting functions
-        
+
         Args:
             spec (smsyn.spectrum.Spectrum): Spectrum object containing
                 the data to be fit
@@ -22,20 +22,20 @@ class Match(object):
             wavmask (boolean array): same length as spec.wav. If True
                 ignore in the likelihood calculation
 
-            cont_method (str): Method for accounting for the mismatch in the 
+            cont_method (str): Method for accounting for the mismatch in the
                 continuum between observed and model spectra. One of:
                 `spline-forward-model` or `spline-double-div`
             rot_method (str): How to apply the rotational broadening
         """
         spec, lib, wavmask = args
-        
+
         assert wavmask.dtype==np.dtype('bool'), "mask must be boolean"
 
         self.spec = spec
         self.lib = lib
         self.wavmask = wavmask
         self._parse_kwargs(kwargs)
-        
+
     def _parse_kwargs(self, kwargs):
         assert kwargs.has_key('cont_method'), "Must contain cont_method"
         self.cont_method = kwargs['cont_method']
@@ -55,7 +55,7 @@ class Match(object):
                 calculate the model. Useful for generating a more finely
                 sampled model for plotting
             **kwargs: extra keyword arguments passed to lib.synth
-            
+
         """
 
         if wav is None:
@@ -77,25 +77,25 @@ class Match(object):
 
         Unpacks the params object and returns a spline evaluated at specified
         wavelengths.
-        
+
         Args:
             params (lmfit.Parameters): See params in self.model
             wav: array of wavelengths at which to calculate the continuum model.
 
         Returns:
             array: spline
-               
+
         """
 
         node_wav, node_flux = get_spline_nodes(params)
         assert len(node_wav) > 3 and len(node_flux) > 3, "Must pass > 3 nodes"
-            
+
         node_wav = np.array(node_wav)
         node_flux = np.array(node_flux)
         splrep = InterpolatedUnivariateSpline(node_wav, node_flux)
         cont = splrep(wav)
         return cont
-        
+
     def resid(self, params, **kwargs):
         """Residuals
 
@@ -110,7 +110,7 @@ class Match(object):
         """
         flux = self.spec.flux.copy()
         wav = self.spec.wav
-        model = self.model(params, wav=wav, **kwargs) 
+        model = self.model(params, wav=wav, **kwargs)
 
         if self.cont_method=='spline-fm':
             model /= self.spline(params, wav)
@@ -163,7 +163,7 @@ class MatchLincomb(Match):
         """
 
         The Match object used for fitting functions
-        
+
         Args:
             spec (smsyn.spectrum.Spectrum): Spectrum object containing
                 the data to be fit
@@ -172,12 +172,12 @@ class MatchLincomb(Match):
 
             wavmask (boolean array): same length as spec.wav. If True
                 ignore in the likelihood calculation
-            cont_method (str): Method for accounting for the mismatch in the 
+            cont_method (str): Method for accounting for the mismatch in the
                 continuum between observed and model spectra. One of:
                 `spline-forward-model` or `spline-double-div`
         """
         spec, lib, wavmask, model_indecies = args
-        
+
         assert wavmask.dtype==np.dtype('bool'), "mask must be boolean"
 
         self.spec = spec
@@ -220,8 +220,8 @@ def get_spline_nodes(params):
         if key.startswith('sp'):
             node_wav.append( float( key.replace('sp','') ) )
             node_flux.append( params[key].value )
-    node_wav = np.array(node_wav) 
-    node_flux = np.array(node_flux) 
+    node_wav = np.array(node_wav)
+    node_flux = np.array(node_flux)
     return node_wav, node_flux
 
 def add_model_weights(params, nmodels, min=0, max=1):

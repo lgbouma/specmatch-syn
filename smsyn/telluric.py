@@ -1,4 +1,4 @@
-import copy 
+import copy
 
 import numpy as np
 import pandas as pd
@@ -12,20 +12,20 @@ from smsyn import pdplus
 
 
 
-linelistpath = '/Users/petigura/Research/SpecMatch/config/telluric_w+d.csv' 
+linelistpath = '/Users/petigura/Research/SpecMatch/config/telluric_w+d.csv'
 tell = pd.read_csv(linelistpath,index_col=0)
 nlines = len(tell)
 
 def telluric_psf(obs,plot=False,plot_med=False):
     """
     Telluric PSF
-    
+
     Measure the instrumental profile of HIRES by treating telluric
     lines as delta functions. The width of the telluric lines is a
     measure of the PSF width.
 
     Method
-    ------ 
+    ------
     Fit a comb of gaussians to the O2 bandhead from 6270-6305A. The
     comb of gaussians that describes the telluric lines has 4 free
     parameters:
@@ -38,12 +38,12 @@ def telluric_psf(obs,plot=False,plot_med=False):
 
     If wls0 is off by more than a line width, we might not find a
     solution. We perform a scan in wls0.
-    
+
     Parameters
     ----------
     obs : CPS observation id.
     """
-    
+
     # Load spectral region and prep.
     spec = smio.getspec_fits(obs=obs)[14]
     spec = spec[(spec['w'] > 6270) & (spec['w'] < 6305)]
@@ -84,13 +84,13 @@ def telluric_psf(obs,plot=False,plot_med=False):
         Returns
         -------
         res : Residual array (used in lmfit)
-        
+
         """
         mod = model(p)
         res = (spec['s'] - mod) / spec['serr'] # normalized residuals
 
         mad = np.median(np.abs(res))
-        b =  (np.abs(res) < 5*mad ) 
+        b =  (np.abs(res) < 5*mad )
         res /= b.sum()
 
         if b.sum() < 10:
@@ -110,7 +110,7 @@ def telluric_psf(obs,plot=False,plot_med=False):
         p['wls0'].value = wls0L[i]
         out = lmfit.minimize(res,p)
         chiL[i] = np.sum(res(p)**2)
-        outL+=[out] 
+        outL+=[out]
 
     # If the initial shift is off by a lot, the line depths will go to
     # zero and median residual will be 0. Reject these values
@@ -129,7 +129,7 @@ def telluric_psf(obs,plot=False,plot_med=False):
         seg = pdplus.LittleEndian(seg.to_records(index=False))
         seg = pd.DataFrame(seg)
         return seg[b]
-    
+
     seg = map(getseg,list(tell.wcen))
     seg = pd.concat(seg,ignore_index=True)
     wstep = 0.025
@@ -150,7 +150,7 @@ def telluric_psf(obs,plot=False,plot_med=False):
         plt.xlabel('Wavelength (A)')
         plt.ylabel('Intensity')
         plt.title('Telluric Lines')
-        
+
     def plot_median_profile():
         # Plot median line profile
         plt.plot(bseg.dw,bseg.s,'.',label='Median Stellar Spectrum')
@@ -196,7 +196,7 @@ def telluric_comb(sig,wls0,wls1,w,wcen,s=None,darr=None):
     wtellmid = np.mean(wcen)
     wcenL = wtellmid + (wcen-wtellmid)*wls1 + wls0
     wcenL = list(wcenL)
-    
+
     model = [ -1.0*gaussian(w,1,wcen,sig) for wcen in wcenL ]
     model = np.vstack(model)
     if darr is None:
@@ -226,14 +226,14 @@ deckname low high  prior
 B5       1.6 2.0   1.8
 C2       1.6 2.0   1.8
 B1       1.4 1.7   1.55
-B3       1.4 1.7   1.55   
+B3       1.4 1.7   1.55
 E2       1.1 1.4   1.25"""
 
     df = pdplus.string_to_df(s)
     df.index=df.deckname
 
     d = df.ix[deckname]
-    
+
     sig_in_range = (sig > d['low']) & (sig < d['high'])
     if ~sig_in_range:
         sig = d['prior']

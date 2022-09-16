@@ -68,11 +68,11 @@ class PixelVelocityShift(object):
             dvel = self._calculate_dvel_2D(**kwargs)
         if method=='spline':
             dvel = self._calculate_dvel_spline(**kwargs)
-            
+
         print("Solving for pixel-by-pixel velocity shift")
         print_vshift(self.pixmid, dvel[:,self.pixmid] )
         return dvel
-        
+
     def _calculate_dvel_global(self):
         """
         Assume that all orders have a constant dvel at a given pixel. The
@@ -80,8 +80,8 @@ class PixelVelocityShift(object):
         dvel. We interpolate between the segment centers using a
         linear model.
         """
-        # threshold (units of MAD) to throw out shifts 
-        sigclip = 5 
+        # threshold (units of MAD) to throw out shifts
+        sigclip = 5
         vshift = self.vshift.copy()
         med = np.median(vshift)
         mad = np.median(np.abs(vshift - med))
@@ -98,7 +98,7 @@ class PixelVelocityShift(object):
         pix = np.arange(self.npix)
         pfit = np.polyfit(self.pixmid,vshift,1)
 
-        dvel = np.zeros((self.nord,self.npix)) 
+        dvel = np.zeros((self.nord,self.npix))
         dvel += np.polyval(pfit,pix)[np.newaxis,:]
         return dvel
 
@@ -185,13 +185,13 @@ def vshift(ech, ref_wav, ref_flux, nseg=8):
         ech (Echelle object): Echelle object having `nord` orders and
             `npix` measurements per order
 
-        ref_wav (array): Array with shape `(nref_wav, )` of wavelengths of 
+        ref_wav (array): Array with shape `(nref_wav, )` of wavelengths of
             reference spectrum.
 
         ref_flux (array): Array with shape `(nref_wav, )` with the
             continuum-normalized flux of reference spectrum.
 
-        nseg (int): Number of segments to break each order into when 
+        nseg (int): Number of segments to break each order into when
             performing the cross-correlation.
 
     Returns:
@@ -208,7 +208,7 @@ def vshift(ech, ref_wav, ref_flux, nseg=8):
     nref_wav = ref_flux.shape[0]
     vshift = np.zeros( (ech.nord, nseg) )
 
-    # array indecies associated with different segments 
+    # array indecies associated with different segments
     pixsegs = np.array_split(np.arange(ech.npix), nseg)
     pixmid = np.array([int(np.mean(x)) for x in pixsegs])
 
@@ -245,7 +245,7 @@ def shift_orders(ech, ref_wav, dvel):
             at each pixel.
 
     Returns:
-        ech_shift (Echelle object): Echelle object with shape 
+        ech_shift (Echelle object): Echelle object with shape
             `(ech.nord, nref_wav)`
     """
 
@@ -258,12 +258,12 @@ def shift_orders(ech, ref_wav, dvel):
     flux_shift[:] = np.nan
     uflux_shift[:] = np.nan
     ech_shift = Echelle(wav_shift, flux_shift, uflux_shift )
-    
+
     for i_order in range(ech.nord):
         # Calculate the change in wavelength to the model Change
         # wavelengths to the rest wavelengths
         dlam = dvel[i_order] / SPEED_OF_LIGHT * ech.wav[i_order]
-        wav_refscale = ech.wav[i_order] - dlam 
+        wav_refscale = ech.wav[i_order] - dlam
         b = (wav_refscale[0] < ref_wav) & (ref_wav < wav_refscale[-1])
 
         # Shift flux.
@@ -283,15 +283,15 @@ def flatten(ech, method='average'):
 
     ech.flux = ma.masked_invalid(ech.flux)
     ech.uflux = ma.masked_invalid(ech.uflux)
-    
+
     if method=='average':
         ivar = ech.uflux**-2
         # Weighted mean and uncertanty on weighted mean
         flux = ma.sum( ech.flux * ivar, axis=0 ) / ma.sum(ivar, axis=0)
         uflux = ma.sqrt( 1 / ma.sum(ivar, axis=0) )
 
-    flux.fill_value = np.nan 
-    uflux.fill_value = np.nan 
+    flux.fill_value = np.nan
+    uflux.fill_value = np.nan
     flux = flux.filled()
     uflux = uflux.filled()
     return flux, uflux

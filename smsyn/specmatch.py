@@ -22,13 +22,13 @@ def grid_search(spec, libfile, wav_exclude, param_table, idx_coarse, idx_fine):
     """
     Args:
         spec0 (smsyn.spectrum.Spectrum): the spectrum
-        libfile (str): path to library hdf5 file. 
+        libfile (str): path to library hdf5 file.
         wav_exclude (list): define wavlengths to exclude from fit
-            e.g. [[5018, 5019.5],[5027.5, 5028.5]] 
+            e.g. [[5018, 5019.5],[5027.5, 5028.5]]
         param_table (pandas.DataFrame): table of grid values to search over
         idx_coarse (list): the indecies of `param_table` to use in the initial
             coarse search
-        idx_fine (list): the indecies of `param_table` useable for the fine 
+        idx_fine (list): the indecies of `param_table` useable for the fine
             search.
     """
     wavlim = spec.wav[0],spec.wav[-1]
@@ -37,21 +37,21 @@ def grid_search(spec, libfile, wav_exclude, param_table, idx_coarse, idx_fine):
     match = smsyn.match.Match(
         spec, lib, wavmask, cont_method='spline-dd', rot_method='rot'
     )
-    
+
     # First do a coarse grid search
     print("performing coarse grid search")
     param_table_coarse = grid_search_loop(match, param_table.loc[idx_coarse])
 
-    # For the fine grid search, 
+    # For the fine grid search,
     print("performing fine grid search")
     top = param_table_coarse.sort_values(by='rchisq').head(10)
     tab = param_table.loc[idx_fine]
     tab = tab.drop(idx_coarse)
 
     param_table_fine = tab[
-         tab.teff.between(top.teff.min(),top.teff.max()) & 
-        tab.logg.between(top.logg.min(),top.logg.max()) & 
-        tab.fe.between(top.fe.min(),top.fe.max()) 
+         tab.teff.between(top.teff.min(),top.teff.max()) &
+        tab.logg.between(top.logg.min(),top.logg.max()) &
+        tab.fe.between(top.fe.min(),top.fe.max())
     ]
     param_table_fine = grid_search_loop(match, param_table_fine)
     param_table = pd.concat([param_table_coarse, param_table_fine])
@@ -75,11 +75,11 @@ def grid_search_loop(match, param_table0):
     Returns:
         pandas DataFrame: results of the grid search with the input parameters
             and the following columns added: `logprob` log likelihood, `chisq`
-            chi-squared, and `rchisq` reduced chisq, `niter` number of 
+            chi-squared, and `rchisq` reduced chisq, `niter` number of
             iterations
     """
     nrows = len(param_table0)
-    param_keys = param_table0.columns    
+    param_keys = param_table0.columns
     param_table = param_table0.copy()
     for col in 'chisq rchisq logprob nfev'.split():
         param_table[col] = np.nan
@@ -92,7 +92,7 @@ def grid_search_loop(match, param_table0):
     smsyn.match.add_spline_nodes(params, nodes, vary=False)
     params['vsini'].vary = True
     params['vsini'].min = 0.2
-    
+
     print_grid_search()
     counter=0
     for i, row in param_table.iterrows():
@@ -107,10 +107,10 @@ def grid_search_loop(match, param_table0):
         param_table.loc[i,'nfev'] = mini.nfev
 
         nresid = match.masked_nresid( mini.params )
-        logprob = -0.5 * np.sum(nresid**2) 
+        logprob = -0.5 * np.sum(nresid**2)
         param_table.loc[i,'logprob'] = logprob
         d = dict(param_table.loc[i])
-        d['counter'] = counter 
+        d['counter'] = counter
         d['nrows'] = nrows
         print_grid_search(d)
         counter+=1
@@ -156,8 +156,8 @@ def lincomb(spec, libfile, wav_exclude, param_table):
 
     def chisq(params):
         nresid = match.masked_nresid(params)
-        return np.sum(nresid**2) 
-        
+        return np.sum(nresid**2)
+
     def rchisq(params):
         return chisq(params) / num_points
 
@@ -195,16 +195,16 @@ def lincomb(spec, libfile, wav_exclude, param_table):
     rchisq = np.sum(match.masked_nresid(params)**2) / len(nresid)
 
     d = dict(
-        rchisq = rchisq, 
-        params_out = params_out, 
+        rchisq = rchisq,
+        params_out = params_out,
         model=match.model(out.params),
-        wav=match.spec.wav, resid=match.resid(params), 
+        wav=match.spec.wav, resid=match.resid(params),
     )
     return d
 
 def polish(match, params0, psf, psf_err, angstrom_per_node=20):
     """Polish parameters
-    
+
     Given a list of match object, polish the parameters segment by segment
 
     Args:
@@ -258,7 +258,7 @@ def polish(match, params0, psf, psf_err, angstrom_per_node=20):
 
     def chisq(params):
         nresid = match.masked_nresid(params)
-        _chisq = np.sum(nresid**2) 
+        _chisq = np.sum(nresid**2)
         return _chisq
 
     def rchisq(params):
@@ -301,13 +301,13 @@ def polish(match, params0, psf, psf_err, angstrom_per_node=20):
 
     for k in 'teff logg fe vsini psf'.split():
         params_out[k] = lmout.params[k].value
-    params_out['rchisq1'] = rchisq(lmout.params) 
+    params_out['rchisq1'] = rchisq(lmout.params)
     resid = match.resid(lmout.params)
     d = dict(
-        params_out=params_out, 
-        flux=match.spec.flux, 
-        wav=match.spec.wav, 
-        resid=resid, 
+        params_out=params_out,
+        flux=match.spec.flux,
+        wav=match.spec.wav,
+        resid=resid,
         wavmask=match.wavmask,
     )
     return d
